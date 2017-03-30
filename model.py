@@ -55,15 +55,19 @@ model.add(Flatten())
 
 # 64*1*18 = 1164 -> 100
 model.add(Dense(100, input_dim=1164))
-
+model.add(Dropout(0.5))
 # 100 -> 50
 model.add(Dense(50))
+model.add(Dropout(0.5))
 
 # 50 -> 10
 model.add(Dense(10))
+model.add(Dropout(0.5))
 
 model.add(Dense(1))
 
+# original loss:
+# loss = tf.reduce_mean(tf.square(tf.sub(model.y_, model.y))) + tf.add_n([tf.nn.l2_loss(v) for v in train_vars]) * L2NormConst
 model.compile(optimizer='adam',
-              loss='mean_squared_error',
+              loss='mean_squared_logarithmic_error',
               metrics=['accuracy'])
