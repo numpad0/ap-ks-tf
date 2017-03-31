@@ -54,14 +54,14 @@ model.add(Conv2D(filters = 64,
 model.add(Flatten())
 
 # 64*1*18 = 1164 -> 100
-model.add(Dense(100, input_dim=1164))
+model.add(Dense(100, activation="relu", input_dim=1164))
 model.add(Dropout(0.5))
 # 100 -> 50
-model.add(Dense(50))
+model.add(Dense(50, activation="relu"))
 model.add(Dropout(0.5))
 
 # 50 -> 10
-model.add(Dense(10))
+model.add(Dense(10, activation="relu"))
 model.add(Dropout(0.5))
 
 model.add(Dense(1))
