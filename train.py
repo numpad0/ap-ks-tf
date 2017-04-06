@@ -3,6 +3,7 @@ from keras.layers import Dense, Dropout, Activation, Conv2D, Flatten, Reshape
 from keras.preprocessing.image import ImageDataGenerator
 import scipy.misc
 import numpy
+import random
 import threading
 import model
 
@@ -48,14 +49,6 @@ model = model.model
 print(model.summary())
 
 gen = generate_arrays_from_file(batch_size)
-#ct = 0
-#data = []
-#while ct<10:
-#    data.append(next(gen))
-#    ct += 1
-#print (data)
-#idg.fit(xi)
-#model.fit_generator(idg.flow(xi, ys, batch_size=batch_size), samples_per_epoch = 5000, nb_epoch = epochs)
 model.fit_generator(gen,
                     steps_per_epoch = 100,
                     epochs = epochs,

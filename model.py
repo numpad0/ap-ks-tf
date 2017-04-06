@@ -21,7 +21,7 @@ model.add(Conv2D(filters = 36,
                  strides = 2,
                  activation="relu",
                  data_format="channels_last",
-                 padding="valid"
+                 padding="valid",
                  ))
 
 # 36@14x47 -> 48@5x22
@@ -55,19 +55,20 @@ model.add(Flatten())
 
 # 64*1*18 = 1164 -> 100
 model.add(Dense(100, activation="relu", input_dim=1164))
-model.add(Dropout(0.5))
+model.add(Dropout(0.8))
 # 100 -> 50
 model.add(Dense(50, activation="relu"))
-model.add(Dropout(0.5))
+model.add(Dropout(0.8))
 
 # 50 -> 10
 model.add(Dense(10, activation="relu"))
-model.add(Dropout(0.5))
+model.add(Dropout(0.8))
 
-model.add(Dense(1))
+model.add(Dense(1, activation="relu"))
 
 # original loss:
 # loss = tf.reduce_mean(tf.square(tf.sub(model.y_, model.y))) + tf.add_n([tf.nn.l2_loss(v) for v in train_vars]) * L2NormConst
+# avg(output - ground truth)^2 + sum(nn.l2_loss(v)) * 0.001
 model.compile(optimizer='adam',
-              loss='mean_squared_logarithmic_error',
+              loss='mean_squared_error',
               metrics=['accuracy'])
