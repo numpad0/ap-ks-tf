@@ -24,14 +24,16 @@ epochs = 30
 with open("driving_dataset/data.txt") as f:
     for line in f:
         xf.append("driving_dataset/" + line.split()[0])
-        ys.append(float(line.split()[1]) * scipy.pi / 180)
+        ys.append(float(line.split()[1]) / 576)
+        # assuming 1152 degrees lock-to-lock to map input to -1 to 1
 
 model = load_model('ap-model.hdf5')
 
 print(model.summary())
-
+model_layer_count = len(model.layers)
+print("layer count: ", model_layer_count)
 get_last_output = K.function([model.layers[0].input, K.learning_phase()],
-                        [model.layers[13].output])
+                        [model.layers[model_layer_count-1].output])
 
 get_1st_output = K.function([model.layers[0].input, K.learning_phase()],
                         [model.layers[1].output])
@@ -39,7 +41,6 @@ i = 0
 while(cv2.waitKey(10) != ord('q')):
     full_image = scipy.misc.imread(xf[i], mode="RGB")
     image = numpy.expand_dims((scipy.misc.imresize(full_image[-150:], [66, 200]) / 255.0), axis=0)
-    print(image.shape)
     degrees = get_last_output([image, 0])
     output_1st = numpy.empty((31, 392), dtype=float)
     layers = get_1st_output([image, 0])[0]
@@ -49,9 +50,11 @@ while(cv2.waitKey(10) != ord('q')):
         for q in range (0, 3):
             output_1st_row = numpy.hstack((output_1st_row, layers[0][p*q]))
         output_1st = numpy.vstack((output_1st, output_1st_row))
-    print("output: ", degrees)
-    print("truth : ", ys[i])
-    smoothed_angle = (float(degrees[0]))
+    out = "{:.7f}".format(degrees[0][0][0])
+    truth = "{:.7f}".format(ys[i])
+    perc = (((degrees[0][0][0] - (ys[i]))/(ys[i]))*100)
+    print("output: ", out, "truth: ", truth, "precision: ", perc)
+    smoothed_angle = (float(degrees[0][0][0]) * 1152)
     M = cv2.getRotationMatrix2D((cols/2,rows/2),smoothed_angle,1)
     dst = cv2.warpAffine(img,M,(cols,rows))
     cv2.imshow("frame", cv2.cvtColor(full_image, cv2.COLOR_RGB2BGR))

@@ -1,5 +1,9 @@
+import tensorflow as tf
+import numpy
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Conv2D, Flatten, Reshape
+from keras import regularizers
+from keras.optimizers import Adam
+from keras.layers import Dense, Dropout, Activation, Conv2D, Flatten, Reshape, Lambda
 
 model = Sequential()
 
@@ -11,6 +15,8 @@ model.add(Conv2D(filters = 24,
                  strides = 2,
                  activation="relu",
                  data_format="channels_last",
+                 kernel_initializer='random_uniform',
+                 bias_regularizer=regularizers.l2(0.5),
                  padding="valid",
                  input_shape=(66, 200, 3),
                  ))
@@ -21,6 +27,8 @@ model.add(Conv2D(filters = 36,
                  strides = 2,
                  activation="relu",
                  data_format="channels_last",
+                 kernel_initializer='random_uniform',
+                 bias_regularizer=regularizers.l2(0.5),
                  padding="valid",
                  ))
 
@@ -30,6 +38,8 @@ model.add(Conv2D(filters = 48,
                  strides = 2,
                  activation="relu",
                  data_format="channels_last",
+                 kernel_initializer='random_uniform',
+                 bias_regularizer=regularizers.l2(0.5),
                  padding="valid"
                  ))
 
@@ -39,6 +49,8 @@ model.add(Conv2D(filters = 64,
                  strides = 1,
                  activation="relu",
                  data_format="channels_last",
+                 kernel_initializer='random_uniform',
+                 bias_regularizer=regularizers.l2(0.1),
                  padding="valid"
                  ))
 
@@ -48,27 +60,39 @@ model.add(Conv2D(filters = 64,
                  strides = 1,
                  activation="relu",
                  data_format="channels_last",
+                 kernel_initializer='random_uniform',
+                 bias_regularizer=regularizers.l2(0.04),
                  padding="valid"
                  ))
 
 model.add(Flatten())
 
 # 64*1*18 = 1164 -> 100
-model.add(Dense(100, activation="relu", input_dim=1164))
-model.add(Dropout(0.8))
+model.add(Dense(100,
+                activation="relu",
+                kernel_initializer='random_uniform',
+                bias_regularizer=regularizers.l2(0.01),
+                input_dim=1164))
 # 100 -> 50
-model.add(Dense(50, activation="relu"))
-model.add(Dropout(0.8))
+model.add(Dense(50,
+                activation="relu",
+                kernel_initializer='random_uniform',
+                bias_regularizer=regularizers.l2(0.01)))
 
 # 50 -> 10
-model.add(Dense(10, activation="relu"))
-model.add(Dropout(0.8))
+model.add(Dense(10,
+                activation="relu",
+                kernel_initializer='random_uniform',
+                bias_regularizer=regularizers.l2(0.01)))
 
-model.add(Dense(1, activation="relu"))
+model.add(Dense(1))
+
 
 # original loss:
 # loss = tf.reduce_mean(tf.square(tf.sub(model.y_, model.y))) + tf.add_n([tf.nn.l2_loss(v) for v in train_vars]) * L2NormConst
 # avg(output - ground truth)^2 + sum(nn.l2_loss(v)) * 0.001
+
 model.compile(optimizer='adam',
-              loss='mean_squared_error',
-              metrics=['accuracy'])
+              loss='mae',
+              metrics=['acc'])
+#              metrics=['accuracy'])

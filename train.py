@@ -10,39 +10,32 @@ import model
 xf = []
 xi = []
 ys = []
-
-idg = ImageDataGenerator(width_shift_range = 0.05, height_shift_range = 0.05)
-
-batch_size = 100
-epochs = 30
+fl = []
 
 with open("driving_dataset/data.txt") as f:
     for line in f:
-        xf.append("driving_dataset/" + line.split()[0])
-        ys.append(float(line.split()[1]) * scipy.pi / 180)
+        fl.append(line)
 
+random.shuffle(fl)
 
-#for i in xf:
-#    img = (scipy.misc.imresize(scipy.misc.imread(i), [66, 200])/ 255.0)
-#    xi.append(img)
-    #print(i)
+batch_size = 100
+epochs = 10
 
 def generate_arrays_from_file(arg):
     counter = 0
     ximg = []
     yval = []
     while 1:
-        with open("driving_dataset/data.txt") as f:
-            for line in f:
-                path = ("driving_dataset/" + line.split()[0])
-                ximg.append(scipy.misc.imresize(scipy.misc.imread(path), [66, 200])/ 255.0)
-                yval.append(float(line.split()[1]) * scipy.pi / 180)
-                counter += 1
-                if(counter >= arg):
-                    yield (numpy.asarray(ximg), yval)
-                    counter = 0
-                    ximg = []
-                    yval = []
+        for line in fl:
+            path = ("driving_dataset/" + line.split()[0])
+            ximg.append(scipy.misc.imresize(scipy.misc.imread(path), [66, 200])/ 255.0)
+            yval.append(float(line.split()[1]) / 576)
+            counter += 1
+            if(counter >= arg):
+                yield (numpy.asarray(ximg), yval)
+                counter = 0
+                ximg = []
+                yval = []
 
 model = model.model
 
