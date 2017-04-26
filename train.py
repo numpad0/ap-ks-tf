@@ -19,7 +19,7 @@ with open("driving_dataset/data.txt") as f:
 random.shuffle(fl)
 
 batch_size = 100
-epochs = 10
+epochs = 5
 
 def generate_arrays_from_file(arg):
     counter = 0
@@ -28,7 +28,7 @@ def generate_arrays_from_file(arg):
     while 1:
         for line in fl:
             path = ("driving_dataset/" + line.split()[0])
-            ximg.append(scipy.misc.imresize(scipy.misc.imread(path), [66, 200])/ 255.0)
+            ximg.append(scipy.misc.imresize(scipy.misc.imread(path), [66, 200], interp = 'nearest')/ 255.0)
             yval.append(float(line.split()[1]) / 576)
             counter += 1
             if(counter >= arg):

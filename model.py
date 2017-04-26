@@ -16,7 +16,8 @@ model.add(Conv2D(filters = 24,
                  activation="relu",
                  data_format="channels_last",
                  kernel_initializer='random_uniform',
-                 bias_regularizer=regularizers.l2(0.5),
+                 W_regularizer=regularizers.l2(0.6),
+                 bias_regularizer=regularizers.l2(0.6),
                  padding="valid",
                  input_shape=(66, 200, 3),
                  ))
@@ -28,7 +29,7 @@ model.add(Conv2D(filters = 36,
                  activation="relu",
                  data_format="channels_last",
                  kernel_initializer='random_uniform',
-                 bias_regularizer=regularizers.l2(0.5),
+                 bias_regularizer=regularizers.l2(0.6),
                  padding="valid",
                  ))
 
@@ -39,7 +40,7 @@ model.add(Conv2D(filters = 48,
                  activation="relu",
                  data_format="channels_last",
                  kernel_initializer='random_uniform',
-                 bias_regularizer=regularizers.l2(0.5),
+                 bias_regularizer=regularizers.l2(0.2),
                  padding="valid"
                  ))
 
@@ -50,7 +51,7 @@ model.add(Conv2D(filters = 64,
                  activation="relu",
                  data_format="channels_last",
                  kernel_initializer='random_uniform',
-                 bias_regularizer=regularizers.l2(0.1),
+                 bias_regularizer=regularizers.l2(0.2),
                  padding="valid"
                  ))
 
@@ -61,7 +62,7 @@ model.add(Conv2D(filters = 64,
                  activation="relu",
                  data_format="channels_last",
                  kernel_initializer='random_uniform',
-                 bias_regularizer=regularizers.l2(0.04),
+                 bias_regularizer=regularizers.l2(0.2),
                  padding="valid"
                  ))
 
@@ -71,19 +72,18 @@ model.add(Flatten())
 model.add(Dense(100,
                 activation="relu",
                 kernel_initializer='random_uniform',
-                bias_regularizer=regularizers.l2(0.01),
                 input_dim=1164))
 # 100 -> 50
 model.add(Dense(50,
                 activation="relu",
                 kernel_initializer='random_uniform',
-                bias_regularizer=regularizers.l2(0.01)))
+                W_regularizer=regularizers.l2(0.05)))
 
 # 50 -> 10
 model.add(Dense(10,
                 activation="relu",
                 kernel_initializer='random_uniform',
-                bias_regularizer=regularizers.l2(0.01)))
+                W_regularizer=regularizers.l2(0.05)))
 
 model.add(Dense(1))
 

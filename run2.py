@@ -37,19 +37,30 @@ get_last_output = K.function([model.layers[0].input, K.learning_phase()],
 
 get_1st_output = K.function([model.layers[0].input, K.learning_phase()],
                         [model.layers[1].output])
+get_2nd_output = K.function([model.layers[0].input, K.learning_phase()],
+                        [model.layers[2].output])
 i = 0
 while(cv2.waitKey(10) != ord('q')):
     full_image = scipy.misc.imread(xf[i], mode="RGB")
-    image = numpy.expand_dims((scipy.misc.imresize(full_image[-150:], [66, 200]) / 255.0), axis=0)
+    image = numpy.expand_dims((scipy.misc.imresize(full_image, [66, 200]) / 255.0), axis=0)
     degrees = get_last_output([image, 0])
-    output_1st = numpy.empty((31, 392), dtype=float)
-    layers = get_1st_output([image, 0])[0]
-    layers = numpy.rollaxis(layers, 3, 1)
+    output_1st = numpy.empty((31, 392), dtype=float) #24@31x98
+    output_2nd = numpy.empty((14, 282), dtype=float) #36@14x47
+    layers_1st = get_1st_output([image, 0])[0]
+    layers_1st = numpy.rollaxis(layers_1st, 3, 1)
+    layers_2nd = get_2nd_output([image, 0])[0]
+    layers_2nd = numpy.rollaxis(layers_2nd, 3, 1)
     for p in range(1, 6):
         output_1st_row = numpy.empty((31, 98), dtype=float)
         for q in range (0, 3):
-            output_1st_row = numpy.hstack((output_1st_row, layers[0][p*q]))
+            output_1st_row = numpy.hstack((output_1st_row, layers_1st[0][p*q]))
         output_1st = numpy.vstack((output_1st, output_1st_row))
+
+    for r in range(1, 6):
+        output_2nd_row = numpy.empty((14, 47), dtype=float)
+        for s in range (0, 5):
+            output_2nd_row = numpy.hstack((output_2nd_row, layers_2nd[0][r*s]))
+        output_2nd = numpy.vstack((output_2nd, output_2nd_row))
     out = "{:.7f}".format(degrees[0][0][0])
     truth = "{:.7f}".format(ys[i])
     perc = (((degrees[0][0][0] - (ys[i]))/(ys[i]))*100)
@@ -59,6 +70,7 @@ while(cv2.waitKey(10) != ord('q')):
     dst = cv2.warpAffine(img,M,(cols,rows))
     cv2.imshow("frame", cv2.cvtColor(full_image, cv2.COLOR_RGB2BGR))
     cv2.imshow("1st layer output", output_1st)
+    cv2.imshow("2nd layer output", output_2nd)
     cv2.imshow("steering wheel", dst)
     time.sleep(0.01)
     i += 1
