@@ -38,7 +38,7 @@ get_last_output = K.function([model.layers[0].input, K.learning_phase()],
 get_1st_output = K.function([model.layers[0].input, K.learning_phase()],
                         [model.layers[1].output])
 get_2nd_output = K.function([model.layers[0].input, K.learning_phase()],
-                        [model.layers[2].output])
+                        [model.layers[3].output])
 i = 0
 while(cv2.waitKey(10) != ord('q')):
     full_image = scipy.misc.imread(xf[i], mode="RGB")

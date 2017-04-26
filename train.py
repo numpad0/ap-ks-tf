@@ -19,7 +19,7 @@ with open("driving_dataset/data.txt") as f:
 random.shuffle(fl)
 
 batch_size = 100
-epochs = 5
+epochs = 30
 
 def generate_arrays_from_file(arg):
     counter = 0
